@@ -56,19 +56,19 @@ class handLandmarkDetector():
             else:
                 fingers[1].append(0)
             
-            if (data[1][5][2] > data[1][8][2] and data[1][7][2] > data[1][8][2]) or (data[1][5][1] > data[1][8][1] and data[1][7][1] > data[1][8][1]):
+            if (data[1][5][2] > data[1][8][2] and data[1][7][2] > data[1][8][2]) :
                 fingers[1].append(1)
             else:
                 fingers[1].append(0)
-            if (data[1][9][2] > data[1][12][2] and data[1][11][2] > data[1][12][2]) or (data[1][9][1] > data[1][12][1] and data[1][11][1] > data[1][12][1]):
+            if (data[1][9][2] > data[1][12][2] and data[1][11][2] > data[1][12][2]) :
                 fingers[1].append(1)
             else:
                 fingers[1].append(0)
-            if (data[1][13][2] > data[1][16][2] and data[1][15][2] > data[1][16][2]) or (data[1][13][1] > data[1][16][1] and data[1][15][1] > data[1][16][1]):
+            if (data[1][13][2] > data[1][16][2] and data[1][15][2] > data[1][16][2]) :
                 fingers[1].append(1)
             else:
                 fingers[1].append(0)
-            if (data[1][17][2] > data[1][20][2] and data[1][19][2] > data[1][20][2]) or (data[1][17][1] > data[1][20][1] and data[1][19][1] > data[1][20][1]):
+            if (data[1][17][2] > data[1][20][2] and data[1][19][2] > data[1][20][2]) :
                 fingers[1].append(1)
             else:
                 fingers[1].append(0)
@@ -77,26 +77,31 @@ class handLandmarkDetector():
                 fingers[0].append(1)
             else:
                 fingers[0].append(0)
-            if (data[0][5][2] > data[0][8][2] and data[0][7][2] > data[0][8][2]) or (data[0][5][1] < data[0][8][1] and data[0][7][1] < data[0][8][1]):
+            if (data[0][5][2] > data[0][8][2] and data[0][7][2] > data[0][8][2]) :
                 fingers[0].append(1)
             else:
                 fingers[0].append(0)
-            if (data[0][9][2] > data[0][12][2] and data[0][11][2] > data[0][12][2]) or (data[0][9][1] < data[0][12][1] and data[0][11][1] < data[0][12][1]):
+            if (data[0][9][2] > data[0][12][2] and data[0][11][2] > data[0][12][2]) :
                 fingers[0].append(1)
             else:
                 fingers[0].append(0)
-            if (data[0][13][2] > data[0][16][2] and data[0][15][2] > data[0][16][2]) or (data[0][13][1] < data[0][16][1] and data[0][15][1] < data[0][16][1]):
+            if (data[0][13][2] > data[0][16][2] and data[0][15][2] > data[0][16][2]) :
                 fingers[0].append(1)
             else:
                 fingers[0].append(0)
-            if (data[0][17][2] > data[0][20][2] and data[0][19][2] > data[0][20][2]) or (data[0][17][1] < data[0][20][1] and data[0][19][1] < data[0][20][1]):
+            if (data[0][17][2] > data[0][20][2] and data[0][19][2] > data[0][20][2]) :
                 fingers[0].append(1)
             else:
                 fingers[0].append(0)
             
         return fingers
 def main():
-    capture = cv.VideoCapture(0)
+    #Using mobile camera
+    capture = cv.VideoCapture("http://192.168.8.102:8080/video")
+
+    # Using web cam
+    # capture = cv.VideoCapture(0)
+    
     current_time =0
     previous_time= 0
 
@@ -105,11 +110,15 @@ def main():
     while True:
         ret,image = capture.read()
         image = cv.flip(image,1)
+        image = cv.resize(image,(1920,1080))
+        print(image.shape)
 
-        landmarks,image = hand_detector.detect_landmarks(image,draw_default_style=True)
+        landmarks,image = hand_detector.detect_landmarks(image,draw_default_style=False)
+
         fingers=hand_detector.count_up_fingers(landmarks)
         fingers_up = int(fingers[0].count(1)) + int(fingers[1].count(1))
-        cv.putText(image,str(fingers_up),(10,30),cv.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
+        cv.rectangle(image,(10,10),(350,210),(0,255,0),-1)
+        cv.putText(image,str(fingers_up),(30,190),cv.FONT_HERSHEY_SIMPLEX,8,(0,0,255),10)
         cv.imshow("Window",image)
         if cv.waitKey(1)==27:
             break
